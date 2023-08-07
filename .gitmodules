@@ -1,0 +1,6 @@
+[submodule "submodules/strutil"]
+	path = submodules/strutil
+	url = https://github.com/Roman-/strutil.git
+[submodule "submodules/googletest"]
+	path = submodules/googletest
+	url = https://github.com/google/googletest.git
