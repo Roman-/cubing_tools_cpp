@@ -31,6 +31,7 @@ public:
     std::string to_string(bool as_digits = false) const;
     /// @throws runtime_error if scramble is invalid or not normalized
     static MovesVector<qtmMoveSetSize> from_string(const std::vector<std::string>& scramble_moves);
+    static MovesVector<qtmMoveSetSize> from_string(const std::string& scramble);
 private:
     std::vector<uint8_t> moves_;
 };

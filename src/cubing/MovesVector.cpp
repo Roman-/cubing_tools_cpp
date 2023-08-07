@@ -1,4 +1,5 @@
 #include "MovesVector.h"
+#include <strutil.h>
 
 namespace cubing {
 
@@ -89,6 +90,11 @@ MovesVector<qtmMoveSetSize> MovesVector<qtmMoveSetSize>::from_string(const std::
         scrambleInt.push_back(index + shift);
     }
     return scrambleInt;
+}
+
+template<QtmMoveSetSize qtmMoveSetSize>
+MovesVector<qtmMoveSetSize> MovesVector<qtmMoveSetSize>::from_string(const std::string& scramble) {
+    return scramble.empty() ? MovesVector<qtmMoveSetSize>() : from_string(strutil::split(scramble, ' '));
 }
 
 }
