@@ -174,18 +174,7 @@ void CubeState<moveSetSize>::applyScramble(const std::string& scramble) {
         }
     }
 
-    MovesVector<moveSetSize> scrambleInt;
-    for (const auto& moveString : list) {
-        const auto itr = std::find(CubeTraits<moveSetSize>::qtmMoves.begin(), CubeTraits<moveSetSize>::qtmMoves.end(), moveString.front());
-        if (itr == CubeTraits<moveSetSize>::qtmMoves.end()) {
-            throw std::runtime_error(fmt::format("in scramble <{}>, invalid move <{}>", scramble, moveString));
-        }
-        const uint8_t index = itr - CubeTraits<moveSetSize>::qtmMoves.begin();
-        const uint8_t shift = moveString.size() == 1
-                              ? 0 : moveSetSize * (uint8_t(1) + uint8_t(moveString.back() == '\''));
-        scrambleInt.push_back(index + shift);
-    }
-    applyScramble(scrambleInt);
+    applyScramble(MovesVector<moveSetSize>::from_string(list));
 }
 
 template<QtmMoveSetSize moveSetSize>

@@ -14,6 +14,13 @@ enum QtmMoveSetSize : uint8_t {
     allMoves555 = 15 // RUFLDB MES rufldb
 };
 
+// You get RotationDirection when you divide uint8 move by QtmMoveSetSize, e.g. direction_of(uint8(7)) = 7/6 = 1 (double)
+enum RotationDirection {
+    directionCw = 0,
+    directionDouble = 1,
+    directionCcw = 2
+};
+
 template<QtmMoveSetSize>
 struct CubeTraits {
     static const std::string_view qtmMoves;
