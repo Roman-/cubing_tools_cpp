@@ -31,6 +31,8 @@ TEST(MovesVector, MoveCountSme) {
         {"R M", 2}, // can't be combined
         {"F B'", 2}, // can't be combined
         {"F S B'", 1}, // combined into z
+        {"R M' L' U E' D' F", 3}, // x' y F
+        {"F2 S2 B'", 2}, // Fw2 B'
     };
 
     for (const auto& [scramble, move_count]: scrambles_and_move_counts) {
