@@ -60,9 +60,9 @@ static bool can_sidesAndMid_moves_be_combined(uint8_t a_htm, uint8_t b_htm) {
 }
 
 template<QtmMoveSetSize qtmMoveSetSize>
-size_t MovesVector<qtmMoveSetSize>::move_count_SME_combined() const {
+size_t MovesVector<qtmMoveSetSize>::move_count_combined() const {
     if constexpr (qtmMoveSetSize != sidesAndMid333) {
-        throw std::logic_error("move_count_SME_combined is only supported for sidesAndMid333");
+        throw std::logic_error("move_count_combined is only supported for sidesAndMid333");
     }
     if (moves_.size() < 2) {
         return moves_.size();

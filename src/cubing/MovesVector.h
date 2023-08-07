@@ -14,7 +14,7 @@ public:
     bool empty() {return moves_.empty();}
     /// @returns move count, where <R' M> is considered a single move (Rw'), as well as <F S B'> is single move (z), but
     /// <F2 S B'> is two, and <S F2 B'> is three.
-    size_t move_count_SME_combined() const;
+    size_t move_count_combined() const;
     void push_back(uint8_t moveIndex) {moves_.push_back(moveIndex);}
     uint8_t& operator[](size_t i) {return moves_[i];}
     const uint8_t& operator[](size_t i) const {return moves_[i];}

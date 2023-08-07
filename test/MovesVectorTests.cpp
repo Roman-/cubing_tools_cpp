@@ -37,6 +37,6 @@ TEST(MovesVector, MoveCountSme) {
 
     for (const auto& [scramble, move_count]: scrambles_and_move_counts) {
         const auto v = MovesVector<sidesAndMid333>::from_string(scramble);
-        ASSERT_EQ(v.move_count_SME_combined(), move_count) << scramble;
+        ASSERT_EQ(v.move_count_combined(), move_count) << scramble;
     }
 }
