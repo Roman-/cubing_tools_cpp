@@ -292,7 +292,7 @@ std::string CubeState<moveSetSize>::topSideStickers(bool asColors) const {
         sides[edgesState_[6]], // UB
         sides[cornersState_[8]], // UBR
         sides[edgesState_[2]], // UL
-//        sides[capsState_[0]], // U // for our purposes, this is redundant as it's always 'U' or 'W'
+        sides[capsState_[0]], // U
         sides[edgesState_[4]], // UR
         sides[cornersState_[2]], // UFL
         sides[edgesState_[0]], // UF

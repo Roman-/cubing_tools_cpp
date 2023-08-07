@@ -50,7 +50,7 @@ void doMosaicMesTest(int argc, char** argv) {
 
     IterativeScramble<sidesAndMid333> scramble;
     std::unordered_map<std::string, MovesVector<sidesAndMid333>> patternToAlg;
-    const size_t totalPatterns = std::pow(9, 6); // 9 squares on cube face, each square takes every of the 6 colors once
+    const size_t totalPatterns = std::pow(6, 9); // 6 colors of the cube must be taken by all of 9 stickers
     uint64_t counter{0};
     while (!exit_flag) {
         const bool found_all_patterns = patternToAlg.size() == totalPatterns;
