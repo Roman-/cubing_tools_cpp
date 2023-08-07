@@ -7,11 +7,11 @@
 
 namespace cubing {
 
-// Having QtmMoveSetSize defined, a single uint8 number represents a move. For sides333: 0 = L, 5 = B, 6 = L2, 12 = L', 17 = B'
+// Having QtmMoveSetSize defined, a single uint8 number represents a move. For sides333: 0 = R, 5 = B, 6 = R2, 12 = R', 17 = B'
 enum QtmMoveSetSize : uint8_t {
-    sides333 = 6, // LURDFB
-    sidesAndMid333 = 9, //LURDFB MES
-    allMoves555 = 15 // LURDFB MES lurdfb
+    sides333 = 6, // RUFLDB
+    sidesAndMid333 = 9, //RUFLDB MES
+    allMoves555 = 15 // RUFLDB MES rufldb
 };
 
 template<QtmMoveSetSize>
