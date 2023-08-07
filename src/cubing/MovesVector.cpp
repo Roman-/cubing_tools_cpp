@@ -48,12 +48,14 @@ static bool can_sidesAndMid_moves_be_combined(uint8_t a_htm, uint8_t b_htm) {
     if (a_is_double ^ b_is_double) {
         return false; // one is double, another one is not
     }
+    const bool a_is_face_turn = a_index < 6, b_is_face_turn = b_index < 6;
+    if (a_is_face_turn && b_is_face_turn) {
+        return false; // <F B'> is not combined into one; everything else is
+    }
     // both are single rotations
-    const std::bitset<sidesAndMid333> same_direction_as_ruf{0b111000100};
-    const bool a_direction = a_prime == RotationDirection::directionCw
-                             ? same_direction_as_ruf[a_index] : ~same_direction_as_ruf[a_index];
-    const bool b_direction = b_prime == RotationDirection::directionCw
-                             ? same_direction_as_ruf[b_index] : ~same_direction_as_ruf[b_index];
+    const std::bitset<sidesAndMid333> same_direction_as_ruf{0b100000111}; // right-to-left blocks: RUF (same), LDB (not), MES (only S does)
+    const bool a_direction = a_prime == RotationDirection::directionCw == same_direction_as_ruf[a_index];
+    const bool b_direction = b_prime == RotationDirection::directionCw == same_direction_as_ruf[b_index];
     return a_direction == b_direction;
 }
 
