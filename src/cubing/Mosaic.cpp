@@ -50,22 +50,25 @@ void doMosaicMesTest(int argc, char** argv) {
 
     IterativeScramble<sidesAndMid333> scramble;
     std::unordered_map<std::string, MovesVector<sidesAndMid333>> patternToAlg;
-    const size_t totalPatterns = std::pow(6, 9); // 6 colors of the cube must be taken by all of 9 stickers
-    uint64_t counter{0};
+    const size_t totalPatterns = std::pow(6, 9); // each of 6 colors of the cube must be taken by all of 9 stickers
+    uint64_t counter{0}, num_hits{0};
     while (!exit_flag) {
-        const bool found_all_patterns = patternToAlg.size() == totalPatterns;
-        if (++counter % 50000 == 0) {
-            std::cout << (found_all_patterns ? "FOUND ALL " : "found ") << patternToAlg.size() << " of " << totalPatterns
-                << ", " << scramble.progress() << std::endl;
-        }
         CubeState<sidesAndMid333> cube;
         cube.applyScramble(scramble.get());
         const auto pattern = cube.topSideStickers();
         const auto itr = patternToAlg.find(pattern);
         if (itr == patternToAlg.end() || itr->second.move_count_combined() > scramble.get().move_count_combined()) {
             patternToAlg[pattern] = scramble.get();
+            ++num_hits;
         }
         ++scramble;
+
+        if (++counter % 1'000'000 == 0) {
+            std::cout << (patternToAlg.size() == totalPatterns ? "FOUND ALL " : "Found ")
+                      << patternToAlg.size() << " of " << totalPatterns
+                      << ", " << scramble.progress() << " | " << num_hits << " hits" << std::endl;
+        }
+
     }
     std::cout << "Exiting and saving..." << std::endl;
     for (const auto& [pattern, alg] : patternToAlg) {

@@ -33,6 +33,7 @@ TEST(MovesVector, MoveCountSme) {
         {"F S B'", 1}, // combined into z
         {"R M' L' U E' D' F", 3}, // x' y F
         {"F2 S2 B'", 2}, // Fw2 B'
+//        {"R' M R'", 2}, // Rw' R' or R' Rw' TODO this one fails
     };
 
     for (const auto& [scramble, move_count]: scrambles_and_move_counts) {
