@@ -32,12 +32,10 @@ TEST(MovesVector, CombineMoves) {
         {"R' M L U' E D F' S' B", "x' y' z'"},
         {"R M' L' U E' D' F", "x y F"},
         {"F S B'", "z"},
-/*
         {"R' M", "Rw'"},
         {"R U M R'", "R U Rw'"},
         {"F2 S2 B'", "Fw2 B'"},
         {"R' M R'", "Rw' R'"},
-*/
     };
 
     for (const auto& [scramble, combined]: algs_and_their_combined_versions) {

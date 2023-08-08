@@ -78,6 +78,24 @@ static std::string move_to_rotation(uint8_t move) {
     return std::string{letter, '\''};
 }
 
+/// @param move - sidesAndMid333 move
+static std::string moves_to_wide(uint8_t m1, uint8_t m2) {
+    // one of the moves should be non-mid; take it
+    const auto i1 = m1 % sidesAndMid333, i2 = m2 % sidesAndMid333;
+    const bool pick_m1 = i1 < sides333, pick_m2 = i2 < sides333;
+    if (!(pick_m1 ^ pick_m2)) {
+        throw std::runtime_error("moves_to_wide: only one move should be side");
+    }
+    const auto index = pick_m1 ? i1 : i2;
+    const auto prime = pick_m1 ? m1 / sidesAndMid333 : m2 / sidesAndMid333;
+    const char letter = CubeTraits<sidesAndMid333>::qtmMoves[index];
+    if (prime == directionCw) {
+        return {letter, 'w'};
+    }
+    const char prime_char = prime == directionDouble ? '2' : '\'';
+    return std::string{letter, 'w', prime_char};
+}
+
 template<QtmMoveSetSize qtmMoveSetSize>
 std::string MovesVector<qtmMoveSetSize>::to_string_combined_moves() const {
     if constexpr (qtmMoveSetSize != sidesAndMid333) {
@@ -87,12 +105,15 @@ std::string MovesVector<qtmMoveSetSize>::to_string_combined_moves() const {
     std::ostringstream ss;
     for (size_t i = 0; i < size; ++i) {
         const bool combined_with_next = (i < size - 1) && can_combine_into_wide_or_rotation(moves_[i], moves_[i+1]);
-        const bool combined_with_two_next = combined_with_next && (i < size - 2) && can_combine_into_wide_or_rotation(moves_[i+1], moves_[i+2]);
+        const bool combined_with_two_next = combined_with_next
+                                            && (i < size - 2)
+                                            && can_combine_into_wide_or_rotation(moves_[i+1], moves_[i+2])
+                                            && ((moves_[i] % qtmMoveSetSize) != (moves_[i+2] % qtmMoveSetSize)); // R M R
         if (combined_with_two_next) {
             ss << move_to_rotation(moves_[i]);
             i += 2;
         } else if (combined_with_next) {
-            // TODO
+            ss << moves_to_wide(moves_[i], moves_[i+1]);
             i += 1;
         } else {
             ss << move_to_string<qtmMoveSetSize>(moves_[i]);
