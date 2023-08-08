@@ -1,6 +1,7 @@
 #include "ScrambleProcessing.h"
 #include <strutil.h>
 #include <fmt/format.h>
+#include <numeric>
 
 namespace cubing {
 
@@ -239,6 +240,55 @@ std::string scrambleTearApart333(const std::string& input_alg) {
     strutil::replace_all(alg, "b", "B S\'");
 
     return alg;
+}
+
+static std::unordered_map<char, uint32_t> move_scores = {
+    {'R', 100},
+    {'U', 100},
+    {'F', 150},
+    {'L', 110},
+    {'D', 130},
+    {'B', 190},
+    {'M', 150},
+    {'E', 180},
+    {'S', 170},
+    {'r', 130},
+    {'u', 130},
+    {'f', 220},
+    {'l', 140},
+    {'d', 170},
+    {'b', 250},
+    {'x', 190},
+    {'y', 160},
+    {'z', 200},
+};
+
+uint32_t execution_convenience_score(const std::vector<std::string>& moves) {
+    auto single_move_execution_convenience_score = [](const std::string& move) {
+        if (move.empty()) {
+            throw std::runtime_error("execution_convenience_score: empty string");
+        }
+        const auto itr = move_scores.find(move.front());
+        if (itr == move_scores.end()) {
+            throw std::runtime_error("execution_convenience_score: unknown move string <" + move + ">");
+        }
+        uint32_t base_score = itr->second, wide_penalty = 0, double_penalty = 0;
+        if (move.size() > 1 && move[1] == 'w') {
+            wide_penalty = base_score / 10;
+        }
+        if (move.back() == '2') {
+            double_penalty = base_score / 20;
+        }
+        return base_score + wide_penalty + double_penalty;
+    };
+
+    return std::accumulate(moves.begin(), moves.end(), 0, [&](uint32_t sum, const std::string& move) {
+        return sum + single_move_execution_convenience_score(move);
+    });
+}
+
+uint32_t execution_convenience_score(const std::string& alg) {
+    return execution_convenience_score(strutil::split(alg, ' '));
 }
 
 /*
