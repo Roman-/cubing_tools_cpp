@@ -55,4 +55,11 @@ std::string IterativeScramble<qtmMoveSetSize>::progress() const {
     return result;
 }
 
+template<QtmMoveSetSize qtmMoveSetSize>
+IterativeScramble<qtmMoveSetSize> IterativeScramble<qtmMoveSetSize>::from_moves(const MovesVector<qtmMoveSetSize>& m) {
+    IterativeScramble<qtmMoveSetSize> result;
+    result.moves_ = m;
+    return result;
+}
+
 }

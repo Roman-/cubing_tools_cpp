@@ -12,7 +12,7 @@ public:
     // Next algorithm. Skips algs like <R R2>. Also skips <M' R L'> and <L' R M'> but not <R L' M'> (ascending move indexes)
     IterativeScramble& operator++();
 
-    /// \returns progress in percent
+    /// \returns progress report (percent, num moves etc.)
     std::string progress() const;
 
     /// \returns current scramble
@@ -23,6 +23,8 @@ public:
 
     /// \returns current alg size
     std::size_t size() const {return moves_.size();}
+
+    static IterativeScramble<qtmMoveSetSize> from_moves(const MovesVector<qtmMoveSetSize>& moves);
 
 private:
     MovesVector<qtmMoveSetSize> moves_;

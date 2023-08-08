@@ -110,3 +110,22 @@ TEST(IterativeScramble, ParallelLayerMoves) {
     }
     ASSERT_TRUE(existing_algs.empty()) << *existing_algs.begin();
 }
+
+template<QtmMoveSetSize moveSetSize>
+void doSaveLoadTest(size_t num_increments) {
+    IterativeScramble<moveSetSize> scramble;
+    for (size_t i = 0; i < num_increments; ++i) {
+        ++scramble;
+    }
+    const auto alg = scramble.get();
+    auto scramble2 = IterativeScramble<moveSetSize>::from_moves(alg);
+    ASSERT_EQ(scramble2.get().to_string(), scramble.get().to_string());
+    ASSERT_GT(scramble2.get().size(), 0);
+}
+
+TEST(IterativeScramble, SaveLoad) {
+    const size_t num_increments = 100 + size_t(rand()) % 100;
+    doSaveLoadTest<sides333>(num_increments);
+    doSaveLoadTest<sidesAndMid333>(num_increments);
+    doSaveLoadTest<allMoves555>(num_increments);
+}
