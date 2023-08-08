@@ -288,6 +288,9 @@ uint32_t execution_convenience_score(const std::vector<std::string>& moves) {
 }
 
 uint32_t execution_convenience_score(const std::string& alg) {
+    if (alg.empty()) {
+        return 0;
+    }
     return execution_convenience_score(strutil::split(alg, ' '));
 }
 
