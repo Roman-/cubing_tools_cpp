@@ -8,7 +8,7 @@ using namespace cubing;
 
 TEST(ConvenienceScore, Basic) {
     const std::vector<std::pair<std::string, std::string>> good_and_worse_pairs = {
-        {"R", "R U"}, // less moves
+        {"R", "R U"},
         {"R B", "R Bw"}, // Bw is worse than B
         {"U R F D'", "U R F D2"}, // double is worse
         {"Rw' S L", "R U R' U'"}, // more moves -> worse

@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 #include <unordered_set>
 #include <csignal>
+#include <chrono>
 #include "ScrambleProcessing.h"
 #include "IterativeScramble.h"
 #include "CubeState.h"
@@ -14,27 +15,10 @@
 
 namespace cubing {
 
-void doMosaicTest(int argc, char** argv) {
-    IterativeScramble<sides333> scramble;
-    std::unordered_map<std::string, std::string> patternToAlg;
-    const size_t totalPatterns = std::pow(8, 6);
-    uint64_t counter{0};
-    while (patternToAlg.size() != totalPatterns) {
-        if (++counter % 100000 == 0) {
-            std::cout << "found " << patternToAlg.size() << " of " << totalPatterns << ", " << scramble.progress() << std::endl;
-        }
-        CubeState<sides333> cube;
-        cube.applyScramble(scramble.get());
-        const auto pattern = cube.topSideStickers();
-        const auto itr = patternToAlg.find(pattern);
-        if (itr == patternToAlg.end()) {
-            patternToAlg[pattern] = scramble.get().to_string();
-        }
-        ++scramble;
-    }
-}
-
 static volatile bool exit_flag = false;
+auto now = [] {
+    return std::chrono::steady_clock::now();
+};
 
 void doMosaicMesTest(int argc, char** argv) {
     if (argc < 2) {
@@ -50,7 +34,9 @@ void doMosaicMesTest(int argc, char** argv) {
 
     IterativeScramble<sidesAndMid333> scramble;
     std::unordered_map<std::string, MovesVector<sidesAndMid333>> patternToAlg;
+
     const size_t totalPatterns = std::pow(6, 9); // each of 6 colors of the cube must be taken by all of 9 stickers
+    auto last_hit_made = now();
     uint64_t counter{0}, num_hits{0};
     while (!exit_flag) {
         CubeState<sidesAndMid333> cube;
@@ -60,13 +46,16 @@ void doMosaicMesTest(int argc, char** argv) {
         if (itr == patternToAlg.end() || itr->second.move_count_combined() > scramble.get().move_count_combined()) {
             patternToAlg[pattern] = scramble.get();
             ++num_hits;
+            last_hit_made = now();
         }
         ++scramble;
 
         if (++counter % 1'000'000 == 0) {
             std::cout << (patternToAlg.size() == totalPatterns ? "FOUND ALL " : "Found ")
                       << patternToAlg.size() << " of " << totalPatterns
-                      << ", " << scramble.progress() << " | " << num_hits << " hits" << std::endl;
+                      << ", " << scramble.progress() << " | " << num_hits << " hits, last hit: "
+                      << std::chrono::duration_cast<std::chrono::seconds>(now() - last_hit_made).count()
+                      << "s ago" << std::endl;
         }
 
     }
