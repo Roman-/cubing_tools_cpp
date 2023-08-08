@@ -23,7 +23,6 @@ auto now = [] {
 
 struct AlgForPattern {
     std::string alg; // wide moves and rotations allowed
-    uint32_t num_moves; // number of moves (HTM move / wide move / rotation counts as one move)
     uint32_t convenience_score; // lower is better
 };
 
@@ -66,7 +65,6 @@ static std::pair<PatternToAlgMap, IterativeScramble<sidesAndMid333>> load_from_f
         map.insert({stickers,
                     {
                         .alg = alg,
-                        .num_moves = uint32_t(std::count(alg.begin(), alg.end(), ' ')) + 1,
                         .convenience_score = execution_convenience_score(alg)
                     }});
     }
@@ -125,12 +123,9 @@ void doMosaicMesTest(int argc, char** argv) {
         const auto alg_string = scramble.get().to_string(); // TODO to_string_combine_moves
         const auto num_moves = uint32_t(std::count(alg_string.begin(), alg_string.end(), ' ')) + 1;
         const auto convenience_score = execution_convenience_score(alg_string);
-        if (itr == patternToAlg.end()
-            || itr->second.num_moves > num_moves
-            || (itr->second.num_moves == num_moves && itr->second.convenience_score > convenience_score)) {
+        if (itr == patternToAlg.end() || itr->second.convenience_score > convenience_score) {
             patternToAlg[pattern] = {
                 .alg = alg_string,
-                .num_moves = num_moves,
                 .convenience_score = convenience_score
             };
             ++num_hits;
