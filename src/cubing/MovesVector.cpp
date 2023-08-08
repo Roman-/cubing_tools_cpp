@@ -1,10 +1,11 @@
 #include "MovesVector.h"
 #include <strutil.h>
+#include <bitset>
 
 namespace cubing {
 
 template<QtmMoveSetSize qtmMoveSetSize>
-static std::string moveToString(uint8_t moveIndex) {
+static std::string move_to_string(uint8_t moveIndex) {
     const uint8_t kNumHtmMoves = qtmMoveSetSize * 3;
     if (moveIndex >= kNumHtmMoves) {
         return "?";
@@ -12,10 +13,10 @@ static std::string moveToString(uint8_t moveIndex) {
     const size_t prime = moveIndex / qtmMoveSetSize;
     const size_t index = moveIndex % qtmMoveSetSize;
     const char letter = CubeTraits<qtmMoveSetSize>::qtmMoves[index];
-    if (prime == 0) {
+    if (prime == directionCw) {
         return std::string(size_t(1), letter); // string ctors suck
     }
-    const char prime_char = prime == 1 ? '2' : '\'';
+    const char prime_char = prime == directionDouble ? '2' : '\'';
     return std::string{letter, prime_char};
 }
 
@@ -26,19 +27,22 @@ std::string MovesVector<qtmMoveSetSize>::to_string(bool as_digits) const {
         if (i > 0) {
             ss << ' ';
         }
-        ss << (as_digits ? std::to_string(int(moves_[i])) : moveToString<qtmMoveSetSize>(moves_[i]));
+        ss << (as_digits ? std::to_string(int(moves_[i])) : move_to_string<qtmMoveSetSize>(moves_[i]));
     }
     // TODO use join(vector_of_callable) from strutil, but it's TODO in strutil
     return ss.str();
 }
 
-static bool can_sidesAndMid_moves_be_combined(uint8_t a_htm, uint8_t b_htm) {
+static bool can_combine_into_wide_or_rotation(uint8_t a_htm, uint8_t b_htm) {
     constexpr uint8_t qtmMoveSetSize = sidesAndMid333;
     const uint8_t a_prime = a_htm / qtmMoveSetSize, b_prime = b_htm / qtmMoveSetSize, // 0 = CW, 1 = double, 2 = prime
     a_index = a_htm % qtmMoveSetSize, b_index = b_htm % qtmMoveSetSize;
     const uint8_t space_between_parallel_moves = 3; // RUF LDB MES
     if (std::abs(a_index - b_index) % space_between_parallel_moves != 0) {
         return false; // not on parallel layers
+    }
+    if (a_index == b_index) {
+        return false; // R R or R2 R are not combined into wide move
     }
     const bool a_is_double = a_prime == RotationDirection::directionDouble;
     const bool b_is_double = b_prime == RotationDirection::directionDouble;
@@ -59,14 +63,40 @@ static bool can_sidesAndMid_moves_be_combined(uint8_t a_htm, uint8_t b_htm) {
     return a_direction == b_direction;
 }
 
+/// @param move - sidesAndMid333 move
+static std::string move_to_rotation(uint8_t move) {
+    const auto index = move % sidesAndMid333, prime = move / sidesAndMid333;
+    const char letter = std::string_view("xyzxyzxyz")[index];
+    if (prime == directionDouble) {
+        return std::string{letter, '2'};
+    }
+    const bool direction_matches = std::bitset<sidesAndMid333>{0b111000001}[sidesAndMid333 - index - 1]; // '1' in 0th position means <x> direction matches <R>
+    const uint8_t prime_corrected = direction_matches ? prime : ((prime + 2) % 4); // 0 -> 2, 2 -> 0
+    if (prime_corrected == directionCw) {
+        return std::string(size_t(1), letter); // string ctors suck
+    }
+    return std::string{letter, '\''};
+}
+
 template<QtmMoveSetSize qtmMoveSetSize>
 std::string MovesVector<qtmMoveSetSize>::to_string_combined_moves() const {
     if constexpr (qtmMoveSetSize != sidesAndMid333) {
         throw std::logic_error("to_string_combined_moves is only supported for sidesAndMid333");
     }
+    const auto size = moves_.size();
     std::ostringstream ss;
-    for (size_t i = 0; i < moves_.size(); ++i) {
-        ss << moveToString<qtmMoveSetSize>(moves_[i]);
+    for (size_t i = 0; i < size; ++i) {
+        const bool combined_with_next = (i < size - 1) && can_combine_into_wide_or_rotation(moves_[i], moves_[i+1]);
+        const bool combined_with_two_next = combined_with_next && (i < size - 2) && can_combine_into_wide_or_rotation(moves_[i+1], moves_[i+2]);
+        if (combined_with_two_next) {
+            ss << move_to_rotation(moves_[i]);
+            i += 2;
+        } else if (combined_with_next) {
+            // TODO
+            i += 1;
+        } else {
+            ss << move_to_string<qtmMoveSetSize>(moves_[i]);
+        }
         if (i != moves_.size() - 1) {
             ss << ' ';
         }

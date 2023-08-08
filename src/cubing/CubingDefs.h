@@ -15,7 +15,7 @@ enum QtmMoveSetSize : uint8_t {
 };
 
 // You get RotationDirection when you divide uint8 move by QtmMoveSetSize, e.g. direction_of(uint8(7)) = 7/6 = 1 (double)
-enum RotationDirection {
+enum RotationDirection : uint8_t {
     directionCw = 0,
     directionDouble = 1,
     directionCcw = 2
