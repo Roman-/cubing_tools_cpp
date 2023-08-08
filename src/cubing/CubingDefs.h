@@ -24,6 +24,7 @@ enum RotationDirection {
 template<QtmMoveSetSize>
 struct CubeTraits {
     static const std::string_view qtmMoves;
+    static inline bool are_parallel_layer_moves(uint8_t m1, uint8_t m2) {return (std::abs(m1-m2) % 3 == 0);}
 };
 template class CubeTraits<sides333>;
 template class CubeTraits<sidesAndMid333>;

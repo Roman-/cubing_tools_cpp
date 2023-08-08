@@ -9,7 +9,6 @@ IterativeScramble<qtmMoveSetSize>& IterativeScramble<qtmMoveSetSize>::operator++
         moves_.push_back(0);
         return *this;
     }
-    auto areMovesOfSameLayer = [this](uint8_t m1, uint8_t m2) { return (m1 % qtmMoveSetSize == m2 % qtmMoveSetSize); };
     const auto numHtmMoves = qtmMoveSetSize * 3; // U, U2, U'
     auto incrementStartingFrom = [&](size_t i) {
         ++moves_[i];
@@ -27,8 +26,10 @@ IterativeScramble<qtmMoveSetSize>& IterativeScramble<qtmMoveSetSize>::operator++
 
     incrementStartingFrom(0);
 
+    // disallow scrambles like <R M' R> or <R' R2> by discarding subsequences of parallel moves that are not sorted
     for (size_t j = 0; j < moves_.size() - 1; ++j) {
-        if (areMovesOfSameLayer(moves_[j], moves_[j + 1])) {
+        if (CubeTraits<qtmMoveSetSize>::are_parallel_layer_moves(moves_[j], moves_[j + 1])
+            && moves_[j] < moves_[j + 1]) {
             incrementStartingFrom(j);
             j = -1; // reset
         }

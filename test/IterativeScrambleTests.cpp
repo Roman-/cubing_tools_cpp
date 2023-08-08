@@ -5,6 +5,7 @@
 #include "cubing/ScrambleProcessing.h"
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 using namespace cubing;
 
@@ -75,4 +76,37 @@ TEST(IterativeScramble, ToString) {
     testToString<sides333>();
     testToString<sidesAndMid333>();
     testToString<allMoves555>();
+}
+
+TEST(IterativeScramble, ParallelLayerMoves) {
+    struct Group {
+        std::unordered_set<std::string> equivalent_algs; // {R2 M} / {M R2} / {R R M} / {R M R} / {R R M}
+        size_t num_matches{0};
+        void check(const std::string& alg) {
+            if (equivalent_algs.count(alg)) {
+                ++num_matches;
+            }
+        }
+    };
+    std::vector<Group> groups = {
+        {.equivalent_algs = {"R2 M", "M R2", "R R M", "R M R", "R R M"}},
+        {.equivalent_algs = {"S' F'", "F' S'"}},
+        {.equivalent_algs = {"M2 R2 L2", "M2 L2 R2", "R2 M2 L2", "R2 L2 M2", "L2 M2 R2", "L2 R2 M2"}},
+    };
+    std::unordered_set<std::string> existing_algs{"M2 F", "S' R U", "S' R U'", "M2 S2 E2"};
+
+    IterativeScramble<sidesAndMid333> scramble;
+    while (scramble.size() <= 3) {
+        ++scramble;
+        const std::string alg = scramble.get().to_string();
+        for (auto& g : groups) {
+            g.check(alg);
+            existing_algs.erase(alg);
+        }
+    }
+    // make sure that each group has exactly 1 alg checked
+    for (const auto& g : groups) {
+        ASSERT_EQ(g.num_matches, 1) << *g.equivalent_algs.begin();
+    }
+    ASSERT_TRUE(existing_algs.empty()) << *existing_algs.begin();
 }
