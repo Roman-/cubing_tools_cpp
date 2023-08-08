@@ -274,10 +274,10 @@ uint32_t execution_convenience_score(const std::vector<std::string>& moves) {
         }
         uint32_t base_score = itr->second, wide_penalty = 0, double_penalty = 0;
         if (move.size() > 1 && move[1] == 'w') {
-            wide_penalty = base_score / 10;
+            wide_penalty = 15 + (base_score - 100) / 2; // R=100 => Rw=115; B=150 => Bw=150+15+25=190
         }
         if (move.back() == '2') {
-            double_penalty = base_score / 20;
+            double_penalty = 10 + (base_score-100) / 4; // R=100, R2=110; D=120, D2=135; E=150, E2=172
         }
         return base_score + wide_penalty + double_penalty;
     };
