@@ -120,7 +120,7 @@ void doMosaicMesTest(int argc, char** argv) {
         cube.applyScramble(scramble.get());
         const auto pattern = cube.topSideStickers();
         const auto itr = patternToAlg.find(pattern);
-        const auto alg_string = scramble.get().to_string(); // TODO to_string_combine_moves
+        const auto alg_string = scramble.get().to_string_combined_moves();
         const auto num_moves = uint32_t(std::count(alg_string.begin(), alg_string.end(), ' ')) + 1;
         const auto convenience_score = execution_convenience_score(alg_string);
         if (itr == patternToAlg.end() || itr->second.convenience_score > convenience_score) {

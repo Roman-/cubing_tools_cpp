@@ -1,6 +1,7 @@
 #include "MovesVector.h"
 #include <strutil.h>
 #include <bitset>
+#include <fmt/format.h>
 
 namespace cubing {
 
@@ -84,7 +85,8 @@ static std::string moves_to_wide(uint8_t m1, uint8_t m2) {
     const auto i1 = m1 % sidesAndMid333, i2 = m2 % sidesAndMid333;
     const bool pick_m1 = i1 < sides333, pick_m2 = i2 < sides333;
     if (!(pick_m1 ^ pick_m2)) {
-        throw std::runtime_error("moves_to_wide: only one move should be side");
+        throw std::runtime_error(fmt::format("moves_to_wide: only one move should be side, got {} and {}",
+                                             move_to_string<sidesAndMid333>(m1), move_to_string<sidesAndMid333>(m2)));
     }
     const auto index = pick_m1 ? i1 : i2;
     const auto prime = pick_m1 ? m1 / sidesAndMid333 : m2 / sidesAndMid333;
@@ -109,10 +111,12 @@ std::string MovesVector<qtmMoveSetSize>::to_string_combined_moves() const {
                                             && (i < size - 2)
                                             && can_combine_into_wide_or_rotation(moves_[i+1], moves_[i+2])
                                             && ((moves_[i] % qtmMoveSetSize) != (moves_[i+2] % qtmMoveSetSize)); // R M R
+        const bool this_move_mid = (moves_[i] % qtmMoveSetSize) >= sides333;
+        const bool next_move_mid = (i < size - 1) && (moves_[i+1] % qtmMoveSetSize) >= sides333;
         if (combined_with_two_next) {
             ss << move_to_rotation(moves_[i]);
             i += 2;
-        } else if (combined_with_next) {
+        } else if (combined_with_next && (this_move_mid ^ next_move_mid)) {
             ss << moves_to_wide(moves_[i], moves_[i+1]);
             i += 1;
         } else {

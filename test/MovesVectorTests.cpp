@@ -28,6 +28,7 @@ TEST(MovesVector, CombineMoves) {
         {"R U R'", "R U R'"},
         {"R M", "R M"}, // can't be combined
         {"F B'", "F B'"}, // can't be combined
+        {"L2 R2", "L2 R2"}, // can't
         {"R' M L", "x'"},
         {"R' M L U' E D F' S' B", "x' y' z'"},
         {"R M' L' U E' D' F", "x y F"},
@@ -36,6 +37,8 @@ TEST(MovesVector, CombineMoves) {
         {"R U M R'", "R U Rw'"},
         {"F2 S2 B'", "Fw2 B'"},
         {"R' M R'", "Rw' R'"},
+        {"M2 R2 S2", "Rw2 S2"},
+        {"S F B", "Fw B"},
     };
 
     for (const auto& [scramble, combined]: algs_and_their_combined_versions) {
