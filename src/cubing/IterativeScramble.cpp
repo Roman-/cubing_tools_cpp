@@ -26,10 +26,10 @@ IterativeScramble<qtmMoveSetSize>& IterativeScramble<qtmMoveSetSize>::operator++
 
     incrementStartingFrom(0);
 
-    // disallow scrambles like <R M' R> or <R' R2> by discarding subsequences of parallel moves that are not sorted
+    // disallow scrambles like <R M' R> or <R' R2> by discarding subsequences of parallel moves that are not sorted.
     for (size_t j = 0; j < moves_.size() - 1; ++j) {
         if (CubeTraits<qtmMoveSetSize>::are_parallel_layer_moves(moves_[j], moves_[j + 1])
-            && moves_[j] < moves_[j + 1]) {
+            && moves_[j] >= moves_[j + 1]) {
             incrementStartingFrom(j);
             j = -1; // reset
         }

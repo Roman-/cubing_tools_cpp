@@ -89,7 +89,7 @@ TEST(IterativeScramble, ParallelLayerMoves) {
         }
     };
     std::vector<Group> groups = {
-        {.equivalent_algs = {"R2 M", "M R2", "R R M", "R M R", "R R M"}},
+        {.equivalent_algs = {"R2 M", "M R2", "M R R", "R M R", "R R M"}},
         {.equivalent_algs = {"S' F'", "F' S'"}},
         {.equivalent_algs = {"M2 R2 L2", "M2 L2 R2", "R2 M2 L2", "R2 L2 M2", "L2 M2 R2", "L2 R2 M2"}},
     };

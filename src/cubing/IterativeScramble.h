@@ -9,7 +9,7 @@ namespace cubing {
 template<QtmMoveSetSize qtmMoveSetSize>
 class IterativeScramble {
 public:
-    // Next algorithm. Skips algs like <R R2>.
+    // Next algorithm. Skips algs like <R R2>. Also skips <M' R L'> and <L' R M'> but not <R L' M'> (ascending move indexes)
     IterativeScramble& operator++();
 
     /// \returns progress in percent
