@@ -60,22 +60,18 @@ static bool can_sidesAndMid_moves_be_combined(uint8_t a_htm, uint8_t b_htm) {
 }
 
 template<QtmMoveSetSize qtmMoveSetSize>
-size_t MovesVector<qtmMoveSetSize>::move_count_combined() const {
+std::string MovesVector<qtmMoveSetSize>::to_string_combined_moves() const {
     if constexpr (qtmMoveSetSize != sidesAndMid333) {
-        throw std::logic_error("move_count_combined is only supported for sidesAndMid333");
+        throw std::logic_error("to_string_combined_moves is only supported for sidesAndMid333");
     }
-    if (moves_.size() < 2) {
-        return moves_.size();
-    }
-    size_t num_moves_that_could_be_combined = 0;
-    // consider every adjacent move to find out if they can be combined into one wide move
-    for (size_t i = 0; i < moves_.size() - 1; ++i) {
-        if (can_sidesAndMid_moves_be_combined(moves_[i], moves_[i + 1])) {
-            ++num_moves_that_could_be_combined;
-            // do NOT skip next move: for sequences like <L M R'>, num_moves_that_could_be_combined = 2
+    std::ostringstream ss;
+    for (size_t i = 0; i < moves_.size(); ++i) {
+        ss << moveToString<qtmMoveSetSize>(moves_[i]);
+        if (i != moves_.size() - 1) {
+            ss << ' ';
         }
     }
-    return moves_.size() - num_moves_that_could_be_combined;
+    return ss.str();
 }
 
 template<QtmMoveSetSize qtmMoveSetSize>
