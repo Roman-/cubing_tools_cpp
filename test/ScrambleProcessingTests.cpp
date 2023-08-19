@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "cubing/ScrambleProcessing.h"
 #include "cubing/MovesVector.h"
+#include "cubing/CubeState.h"
 #include <vector>
 #include <string>
 #include <unordered_set>
@@ -27,13 +28,29 @@ TEST(ScrambleProcessingTests, Basic) {
 
 TEST(ScrambleProcessingTests, toStringCombinedMoves) {
     const std::vector<std::pair<std::string, std::string>> unwrapped_and_wrapped = {
+        {"B F' S'", "z'"}, // this
         {"F2 S2", "Fw2"},
         {"F S B'", "z"},
-        {"F' S' B", "z'"}, // this
-        {"F2 S2 B2", "z2"}, // this
+        {"F2 S2 B2", "z2"},
     };
     for (const auto& [unwrapped, wrapped] : unwrapped_and_wrapped) {
-        auto scramble = MovesVector<sidesAndMid333>::from_string(unwrapped);
-        ASSERT_EQ(scramble.to_string_combined_moves(), wrapped);
+        const auto scramble = MovesVector<sidesAndMid333>::from_string(unwrapped);
+        ASSERT_EQ(scramble.to_string_combined_moves(), wrapped) << scramble.to_string();
+    }
+}
+
+TEST(ScrambleProcessingTests, toStringCombinedMovesCounterExamples) {
+    const std::vector<std::pair<std::string, std::string>> unwrapped_and_wrapped = {
+        {"B F' S", "S B F'"},
+    };
+    for (const auto& [scrambleString1, scrambleString2] : unwrapped_and_wrapped) {
+        // we can't directly compare expected and unwrapped because e.g. B F' S = S B F'. So instead compare cube states
+        const auto scramble1 = MovesVector<sidesAndMid333>::from_string(scrambleString1),
+            scramble2 = MovesVector<sidesAndMid333>::from_string(scrambleString2);
+        CubeState<sidesAndMid333> cube1, cube2;
+        cube1.applyScramble(scramble1.to_string_combined_moves());
+        cube2.applyScramble(scramble2.to_string_combined_moves());
+
+        ASSERT_EQ(cube1.toString(), cube2.toString());
     }
 }

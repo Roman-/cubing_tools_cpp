@@ -34,16 +34,14 @@ std::string MovesVector<qtmMoveSetSize>::to_string(bool as_digits) const {
     return ss.str();
 }
 
-static bool can_combine_into_wide_or_rotation(uint8_t a_htm, uint8_t b_htm) {
+/// @returns true for pairs of moves like {R L'}, {S B'}, {D2 E2}, {F F} etc, and false for {F S2}, {R R'}, or {U D}
+static bool are_moving_in_same_direction(uint8_t a_htm, uint8_t b_htm) {
     constexpr uint8_t qtmMoveSetSize = sidesAndMid333;
     const uint8_t a_prime = a_htm / qtmMoveSetSize, b_prime = b_htm / qtmMoveSetSize, // 0 = CW, 1 = double, 2 = prime
     a_index = a_htm % qtmMoveSetSize, b_index = b_htm % qtmMoveSetSize;
     const uint8_t space_between_parallel_moves = 3; // RUF LDB MES
     if (std::abs(a_index - b_index) % space_between_parallel_moves != 0) {
         return false; // not on parallel layers
-    }
-    if (a_index == b_index) {
-        return false; // R R or R2 R are not combined into wide move
     }
     const bool a_is_double = a_prime == RotationDirection::directionDouble;
     const bool b_is_double = b_prime == RotationDirection::directionDouble;
@@ -52,10 +50,6 @@ static bool can_combine_into_wide_or_rotation(uint8_t a_htm, uint8_t b_htm) {
     }
     if (a_is_double ^ b_is_double) {
         return false; // one is double, another one is not
-    }
-    const bool a_is_face_turn = a_index < 6, b_is_face_turn = b_index < 6;
-    if (a_is_face_turn && b_is_face_turn) {
-        return false; // <F B'> is not combined into one; everything else is
     }
     // both are single rotations
     const std::bitset<sidesAndMid333> same_direction_as_ruf{0b100000111}; // right-to-left blocks: RUF (same), LDB (not), MES (only S does)
@@ -106,11 +100,15 @@ std::string MovesVector<qtmMoveSetSize>::to_string_combined_moves() const {
     const auto size = moves_.size();
     std::ostringstream ss;
     for (size_t i = 0; i < size; ++i) {
-        const bool combined_with_next = (i < size - 1) && can_combine_into_wide_or_rotation(moves_[i], moves_[i+1]);
+        const bool combined_with_next = (i < size - 1)
+                                        && are_moving_in_same_direction(moves_[i], moves_[i+1])
+                                        && (moves_[i] != moves_[i+1]);
+        // consider F B' S: all 3 moves are parallel but different faces
         const bool combined_with_two_next = combined_with_next
                                             && (i < size - 2)
-                                            && can_combine_into_wide_or_rotation(moves_[i+1], moves_[i+2])
-                                            && ((moves_[i] % qtmMoveSetSize) != (moves_[i+2] % qtmMoveSetSize)); // R M R
+                                            && are_moving_in_same_direction(moves_[i+1], moves_[i+2])
+                                            && (moves_[i] != moves_[i+2])
+                                            && (moves_[i+1] != moves_[i+2]);
         const bool this_move_mid = (moves_[i] % qtmMoveSetSize) >= sides333;
         const bool next_move_mid = (i < size - 1) && (moves_[i+1] % qtmMoveSetSize) >= sides333;
         if (combined_with_two_next) {
