@@ -1,12 +1,13 @@
 #include "gtest/gtest.h"
 #include "cubing/ScrambleProcessing.h"
+#include "cubing/MovesVector.h"
 #include <vector>
 #include <string>
 #include <unordered_set>
 
 using namespace cubing;
 
-TEST(ConvenienceScore, Basic) {
+TEST(ScrambleProcessingTests, Basic) {
     const std::vector<std::pair<std::string, std::string>> good_and_worse_pairs = {
         {"R", "R U"},
         {"R B", "R Bw"}, // Bw is worse than B
@@ -21,5 +22,18 @@ TEST(ConvenienceScore, Basic) {
         auto good_score = execution_convenience_score(good);
         auto worse_score = execution_convenience_score(worse);
         ASSERT_LE(good_score, worse_score) << good << ", worse = " << worse;
+    }
+}
+
+TEST(ScrambleProcessingTests, toStringCombinedMoves) {
+    const std::vector<std::pair<std::string, std::string>> unwrapped_and_wrapped = {
+        {"F2 S2", "Fw2"},
+        {"F S B'", "z"},
+        {"F' S' B", "z'"}, // this
+        {"F2 S2 B2", "z2"}, // this
+    };
+    for (const auto& [unwrapped, wrapped] : unwrapped_and_wrapped) {
+        auto scramble = MovesVector<sidesAndMid333>::from_string(unwrapped);
+        ASSERT_EQ(scramble.to_string_combined_moves(), wrapped);
     }
 }
