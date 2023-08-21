@@ -129,3 +129,14 @@ TEST(IterativeScramble, SaveLoad) {
     doSaveLoadTest<sidesAndMid333>(num_increments);
     doSaveLoadTest<allMoves555>(num_increments);
 }
+
+TEST(IterativeScramble, BeenThroughZprime) {
+    IterativeScramble<sidesAndMid333> s;
+    while (s.size() < 4) {
+        ++s;
+        if (s.get().to_string_combined_moves() == "z'") {
+            return;
+        }
+    }
+    ASSERT_TRUE(false);
+}

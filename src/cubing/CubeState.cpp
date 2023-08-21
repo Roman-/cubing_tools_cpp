@@ -300,4 +300,20 @@ std::string CubeState<moveSetSize>::topSideStickers(bool asColors) const {
     };
 }
 
+template<QtmMoveSetSize moveSetSize>
+std::string CubeState<moveSetSize>::frontSideStickers(bool asColors) const {
+    const std::string_view sides = asColors ? "WGROYB" : "UFRLDB";
+    return {
+        sides[cornersState_[0]], // FUL
+        sides[edgesState_[1]], // FU
+        sides[cornersState_[10]], // FRU
+        sides[edgesState_[16]], // FL
+        sides[capsState_[1]], // F
+        sides[edgesState_[18]], // FR
+        sides[cornersState_[12]], // FDL
+        sides[edgesState_[9]], // FD
+        sides[cornersState_[23]], // FDR
+    };
+}
+
 }

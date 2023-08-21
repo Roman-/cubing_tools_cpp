@@ -33,6 +33,7 @@ public:
     /// @returns 9-char string with each char representing a color (set @param asColors = true) or a face, in this
     /// order: UBL UB UBR UL U UR UFL UF UFR
     std::string topSideStickers(bool asColors = true) const;
+    std::string frontSideStickers(bool asColors = true) const;
 
     /* scrambling*/
     void applyScramble(const std::string& scramble);

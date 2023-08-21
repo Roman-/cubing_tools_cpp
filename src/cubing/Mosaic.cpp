@@ -118,7 +118,7 @@ void doMosaicMesTest(int argc, char** argv) {
     while (!exit_flag) {
         CubeState<sidesAndMid333> cube;
         cube.applyScramble(scramble.get());
-        const auto pattern = cube.topSideStickers();
+        const auto pattern = cube.frontSideStickers();
         const auto itr = patternToAlg.find(pattern);
         const auto alg_string = scramble.get().to_string_combined_moves();
         const auto num_moves = uint32_t(std::count(alg_string.begin(), alg_string.end(), ' ')) + 1;

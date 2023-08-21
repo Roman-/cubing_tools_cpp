@@ -79,3 +79,9 @@ TEST(Cube, ApplyScrambleString) {
 //    applyScrambleStringTests(CubeState<sidesAndMid333>());
 //    applyScrambleStringTests(CubeState<allMoves555>());
 }
+
+TEST(Cube, SideColors) {
+    CubeState<sides333> cube;
+    ASSERT_EQ(cube.topSideStickers(true), "WWWWWWWWW");
+    ASSERT_EQ(cube.frontSideStickers(true), "GGGGGGGGG");
+}
