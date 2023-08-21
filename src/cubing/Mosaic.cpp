@@ -114,6 +114,7 @@ void doMosaicMesTest(int argc, char** argv) {
 
     const size_t totalPatterns = std::pow(6, 9); // each of 6 colors of the cube must be taken by all of 9 stickers
     auto last_hit_made = now();
+    std::string hit_description;
     uint64_t counter{0}, num_hits{0};
     while (!exit_flag) {
         CubeState<sidesAndMid333> cube;
@@ -124,6 +125,7 @@ void doMosaicMesTest(int argc, char** argv) {
         const auto num_moves = uint32_t(std::count(alg_string.begin(), alg_string.end(), ' ')) + 1;
         const auto convenience_score = execution_convenience_score(alg_string);
         if (itr == patternToAlg.end() || itr->second.convenience_score > convenience_score) {
+            hit_description = itr == patternToAlg.end() ? alg_string : fmt::format("{} -> {}", itr->second.alg, alg_string);
             patternToAlg[pattern] = {
                 .alg = alg_string,
                 .convenience_score = convenience_score
@@ -139,7 +141,7 @@ void doMosaicMesTest(int argc, char** argv) {
                       << patternToAlg.size() << " of " << totalPatterns
                       << ", " << scramble.progress() << " | " << num_hits << " hits, last hit: "
                       << std::chrono::duration_cast<std::chrono::seconds>(now() - last_hit_made).count()
-                      << "s ago" << std::endl;
+                      << "s ago: " << hit_description << std::endl;
         }
         if (counter % 100'000'000 == 0) {
             std::cout << "Saving progress to " << working_dir << "..." << std::endl;
