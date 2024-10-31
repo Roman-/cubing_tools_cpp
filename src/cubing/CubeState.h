@@ -35,6 +35,9 @@ public:
     std::string topSideStickers(bool asColors = true) const;
     std::string frontSideStickers(bool asColors = true) const;
 
+    /// @returns true if each sticker on the front face has the opposite color as the corresponding sticker on the back face
+    bool doFrontAndBackSidesHaveSamePatternWithOppositeColors() const;
+
     /* scrambling*/
     void applyScramble(const std::string& scramble);
 

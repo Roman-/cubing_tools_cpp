@@ -14,7 +14,6 @@
 #include "CubeState.h"
 #include "Helpers.h"
 
-/*
 namespace cubing {
 
 static volatile bool exit_flag = false;
@@ -30,7 +29,7 @@ struct AlgForPattern {
 using PatternToAlgMap = std::unordered_map<std::string, AlgForPattern>;
 static const std::string algs_file_name = "algs.txt", scramble_file_name = "scramble.txt";
 
-static std::pair<PatternToAlgMap, IterativeScramble<sidesAndMid333>> load_from_file(const std::string& working_dir) {
+static std::pair<PatternToAlgMap, IterativeScramble<sides333>> load_from_file(const std::string& working_dir) {
     const auto path_to_algs = fmt::format("{}/{}", working_dir, algs_file_name);
     const auto path_to_scr = fmt::format("{}/{}", working_dir, scramble_file_name);
     // if file does not exist or empty, return empty map
@@ -76,12 +75,12 @@ static std::pair<PatternToAlgMap, IterativeScramble<sidesAndMid333>> load_from_f
     if (scr_lines.size() != 1) {
         throw std::runtime_error(fmt::format("Expected one line in the file {}, got {}", path_to_scr, scr_lines.size()));
     }
-    const auto moves = MovesVector<sidesAndMid333>::from_string(scr_lines.front());
-    auto scr = IterativeScramble<sidesAndMid333>::from_moves(moves);
+    const auto moves = MovesVector<sides333>::from_string(scr_lines.front());
+    auto scr = IterativeScramble<sides333>::from_moves(moves);
     return {map, scr};
 }
 
-void save_progress(const PatternToAlgMap& map, const IterativeScramble<sidesAndMid333>& scr,
+static void save_progress(const PatternToAlgMap& map, const IterativeScramble<sides333>& scr,
                    const std::string& working_dir) {
     const auto path_to_algs = fmt::format("{}/{}", working_dir, algs_file_name);
     const auto path_to_scr = fmt::format("{}/{}", working_dir, scramble_file_name);
@@ -101,7 +100,7 @@ void save_progress(const PatternToAlgMap& map, const IterativeScramble<sidesAndM
     scr_file.close();
 }
 
-void doMosaicMesTest(int argc, char** argv) {
+void doTwoSidedMosaicTest(int argc, char** argv) {
     if (argc < 2) {
         std::cerr << "usage: " << argv[0] << " /path/to/working_dir" << std::endl;
         exit(-1);
@@ -113,27 +112,29 @@ void doMosaicMesTest(int argc, char** argv) {
     std::signal(SIGTERM, [](int) { exit_flag = true; });
     std::signal(SIGHUP, [](int) { exit_flag = true; });
 
-    const size_t totalPatterns = std::pow(6, 9); // each of 6 colors of the cube must be taken by all of 9 stickers
+    const size_t totalPatterns = std::pow(6, 8); // each of 6 colors of the cube must be taken by all of 8 stickers around the center
     auto last_hit_made = now();
     std::string hit_description;
     uint64_t counter{0}, num_hits{0};
     while (!exit_flag) {
-        CubeState<sidesAndMid333> cube;
+        CubeState<sides333> cube;
         cube.applyScramble(scramble.get());
-        const auto pattern = cube.frontSideStickers();
-        const auto itr = patternToAlg.find(pattern);
-        const auto alg_string = scramble.get().to_string_combined_moves();
-        const auto num_moves = uint32_t(std::count(alg_string.begin(), alg_string.end(), ' ')) + 1;
-        const auto convenience_score = execution_convenience_score(alg_string);
-        if (itr == patternToAlg.end() || itr->second.convenience_score > convenience_score) {
-            hit_description = itr == patternToAlg.end() ? alg_string : fmt::format("{} -> {}", itr->second.alg, alg_string);
-            patternToAlg[pattern] = {
-                .alg = alg_string,
-                .convenience_score = convenience_score
-            };
-            ++num_hits;
-            last_hit_made = now();
+        if (cube.doFrontAndBackSidesHaveSamePatternWithOppositeColors()) {
+            const auto pattern = cube.frontSideStickers();
+            const auto itr = patternToAlg.find(pattern);
+            const auto alg_string = scramble.get().to_string();
+            const auto convenience_score = execution_convenience_score(alg_string);
+            if (itr == patternToAlg.end() || itr->second.convenience_score > convenience_score) {
+                hit_description = itr == patternToAlg.end() ? alg_string : fmt::format("{} -> {}", itr->second.alg, alg_string);
+                patternToAlg[pattern] = {
+                    .alg = alg_string,
+                    .convenience_score = convenience_score
+                };
+                ++num_hits;
+                last_hit_made = now();
+            }
         }
+
         ++scramble;
         ++counter;
 
@@ -154,6 +155,5 @@ void doMosaicMesTest(int argc, char** argv) {
     save_progress(patternToAlg, scramble, working_dir);
     std::cout << "Done";
 }
-}
 
- */
+}

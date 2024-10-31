@@ -4,5 +4,5 @@
 using namespace cubing;
 
 int main(int argc, char** argv) {
-    doMosaicMesTest(argc, argv);
+    doTwoSidedMosaicTest(argc, argv);
 }

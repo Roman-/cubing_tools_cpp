@@ -316,4 +316,24 @@ std::string CubeState<moveSetSize>::frontSideStickers(bool asColors) const {
     };
 }
 
+static inline bool are_opposite_colors(uint8_t c1, uint8_t c2) {
+    // wgroyb: w(0) is opposite to y(4), r(2) is opposite to o(3), g(1) is opposite to b(5)
+    constexpr uint8_t opposite_color[6] = {4, 5, 3, 2, 0, 1};
+    return opposite_color[c1] == c2;
+}
+
+template<QtmMoveSetSize moveSetSize>
+bool CubeState<moveSetSize>::doFrontAndBackSidesHaveSamePatternWithOppositeColors() const {
+    return are_opposite_colors(cornersState_[0], cornersState_[4]) // FUL BUL
+        && are_opposite_colors(edgesState_[1], edgesState_[7]) // FU BU
+        && are_opposite_colors(cornersState_[10], cornersState_[6]) // FRU BUR
+        && are_opposite_colors(edgesState_[16], edgesState_[20]) // FL BL
+        && are_opposite_colors(capsState_[1], capsState_[5]) // F B
+        && are_opposite_colors(edgesState_[18], edgesState_[22]) // FR BR
+        && are_opposite_colors(cornersState_[12], cornersState_[17]) // FDL BDL
+        && are_opposite_colors(edgesState_[9], edgesState_[15]) // FD BD
+        && are_opposite_colors(cornersState_[23], cornersState_[18]); // FDR BDR
+
+}
+
 }
