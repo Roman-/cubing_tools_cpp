@@ -52,27 +52,29 @@ static Elements24State tCentersStateInitial = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,1
 static Elements24State wingsStateInitial = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23};
 static Elements6State capsStateInitial = {0,1,2,3,4,5};
 
-static const std::vector<std::string> cornersConfig = { "FUL", "LFU", "ULF", "LUB", "BLU", "UBL",
-                                                 "BUR", "RBU", "URB", "RUF", "FRU", "UFR", "FLD", "DFL", "LDF",
-                                                 "LBD", "DLB", "BDL", "BRD", "DBR", "RDB", "RFD", "DRF", "FDR"};
+static const std::vector<std::string> cornersConfig =
+    { "FUL", "LFU", "ULF", "LUB", "BLU", "UBL", "BUR", "RBU", "URB", "RUF", "FRU", "UFR", "FLD", "DFL", "LDF", "LBD", "DLB", "BDL", "BRD", "DBR", "RDB", "RFD", "DRF", "FDR"};
+    //  0      1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17     18     19     20     21     22     23
 
-static const std::vector<std::string> edgesConfig = { "UF", "FU", "UL", "LU", "UR", "RU", "UB", "BU",
-                                               "DF", "FD", "DL", "LD", "DR", "RD", "DB", "BD", "FL", "LF", "FR", "RF", "BL", "LB",
-                                               "BR", "RB"};
+static const std::vector<std::string> edgesConfig =
+    { "UF", "FU", "UL", "LU", "UR", "RU", "UB", "BU", "DF", "FD", "DL", "LD", "DR", "RD", "DB", "BD", "FL", "LF", "FR", "RF", "BL", "LB", "BR", "RB"};
+    // 0     1     2     3     4     5     6     7     8     9     10    11    12    13    14    15    16    17    18    19    20    21    22    23
 
-static const std::vector<std::string> xCentersConfig = { "Ful", "Lfu", "Ulf", "Lub", "Blu", "Ubl",
-                                                  "Bur", "Rbu", "Urb", "Ruf", "Fru", "Ufr", "Fld", "Dfl", "Ldf",
-                                                  "Lbd", "Dlb", "Bdl", "Brd", "Dbr", "Rdb", "Rfd", "Drf", "Fdr"};
+static const std::vector<std::string> xCentersConfig =
+    { "Ful", "Lfu", "Ulf", "Lub", "Blu", "Ubl", "Bur", "Rbu", "Urb", "Ruf", "Fru", "Ufr", "Fld", "Dfl", "Ldf", "Lbd", "Dlb", "Bdl", "Brd", "Dbr", "Rdb", "Rfd", "Drf", "Fdr"};
+    //  0      1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17     18     19     20     21     22     23
 
-static const std::vector<std::string> tCentersConfig = { "Uf", "Fu", "Ul", "Lu", "Ur", "Ru", "Ub", "Bu",
-                                                  "Df", "Fd", "Dl", "Ld", "Dr", "Rd", "Db", "Bd", "Fl", "Lf", "Fr", "Rf", "Bl", "Lb",
-                                                  "Br", "Rb"};
+static const std::vector<std::string> tCentersConfig =
+    { "Uf", "Fu", "Ul", "Lu", "Ur", "Ru", "Ub", "Bu", "Df", "Fd", "Dl", "Ld", "Dr", "Rd", "Db", "Bd", "Fl", "Lf", "Fr", "Rf", "Bl", "Lb", "Br", "Rb"};
+    // 0     1     2     3     4     5     6     7     8     9     10    11    12    13    14    15    16    17    18    19    20    21    22    23
 
-static const std::vector<std::string> wingsConfig = { "UFl", "FUr", "ULb", "LUf", "URf", "RUb",
-                                               "UBr", "BUl", "DFr", "FDl", "DLf", "LDb", "DRb", "RDf", "DBl", "BDr", "FLu", "LFd",
-                                               "FRd", "RFu", "BLd", "LBu", "BRu", "RBd"};
+static const std::vector<std::string> wingsConfig =
+    { "UFl", "FUr", "ULb", "LUf", "URf", "RUb", "UBr", "BUl", "DFr", "FDl", "DLf", "LDb", "DRb", "RDf", "DBl", "BDr", "FLu", "LFd", "FRd", "RFu", "BLd", "LBu", "BRu", "RBd"};
+    //  0      1      2      3      4      5      6      7      8      9      10     11     12     13     14     15     16     17     18     19     20     21     22     23
 
-static const std::vector<std::string> capsConfig = {"U", "F", "R", "L", "D", "B"};
+static const std::vector<std::string> capsConfig =
+    {"U", "F", "R", "L", "D", "B"};
+   // 0    1    2    3    4    5
 
 
 } // namespace cubing
