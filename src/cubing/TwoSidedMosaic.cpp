@@ -21,12 +21,7 @@ auto now = [] {
     return std::chrono::steady_clock::now();
 };
 
-struct AlgForPattern {
-    std::string alg; // wide moves and rotations allowed
-    uint32_t convenience_score; // lower is better
-};
-
-using PatternToAlgMap = std::unordered_map<std::string, AlgForPattern>;
+using PatternToAlgMap = std::unordered_map<std::string, std::string>;
 static const std::string algs_file_name = "algs.txt", scramble_file_name = "scramble.txt";
 
 static std::pair<PatternToAlgMap, IterativeScramble<sides333>> load_from_file(const std::string& working_dir) {
@@ -62,11 +57,7 @@ static std::pair<PatternToAlgMap, IterativeScramble<sides333>> load_from_file(co
         }
         const auto stickers = line.substr(0, num_stickers);
         const auto alg = line.substr(num_stickers + 1);
-        map.insert({stickers,
-                    {
-                        .alg = alg,
-                        .convenience_score = execution_convenience_score(alg)
-                    }});
+        map.insert({stickers, alg});
     }
     alg_file.close();
     std::cout << "Loaded " << map.size() << " algs" << std::endl;
@@ -89,7 +80,7 @@ static void save_progress(const PatternToAlgMap& map, const IterativeScramble<si
         throw std::runtime_error(fmt::format("Failed to open the file {}", path_to_algs));
     }
     for (const auto& [pattern, alg] : map) {
-        alg_file << pattern << '\t' << alg.alg << '\n';
+        alg_file << pattern << '\t' << alg << '\n';
     }
     alg_file.close();
     std::ofstream scr_file(path_to_scr);
@@ -98,6 +89,17 @@ static void save_progress(const PatternToAlgMap& map, const IterativeScramble<si
     }
     scr_file << scr.get().to_string();
     scr_file.close();
+}
+
+static void save_pace(const std::string& working_dir, size_t num_algs) {
+    const auto path_to_pace = fmt::format("{}/pace.tsv", working_dir, algs_file_name);
+    std::ofstream pace_file;
+    pace_file.open(path_to_pace, std::ios_base::app);
+    if (!pace_file.is_open()) {
+        throw std::runtime_error(fmt::format("Failed to open the file {}", path_to_pace));
+    }
+    pace_file << std::chrono::seconds(std::time(NULL)).count() << '\t' << num_algs << '\n';
+    pace_file.close();
 }
 
 void doTwoSidedMosaicTest(int argc, char** argv) {
@@ -114,7 +116,7 @@ void doTwoSidedMosaicTest(int argc, char** argv) {
 
     const size_t totalPatterns = std::pow(6, 8); // each of 6 colors of the cube must be taken by all of 8 stickers around the center
     auto last_hit_made = now();
-    std::string hit_description;
+    std::string latest_found_alg;
     uint64_t counter{0}, num_hits{0};
     while (!exit_flag) {
         CubeState<sides333> cube;
@@ -122,14 +124,8 @@ void doTwoSidedMosaicTest(int argc, char** argv) {
         if (cube.doFrontAndBackSidesHaveSamePatternWithOppositeColors()) {
             const auto pattern = cube.frontSideStickers();
             const auto itr = patternToAlg.find(pattern);
-            const auto alg_string = scramble.get().to_string();
-            const auto convenience_score = execution_convenience_score(alg_string);
-            if (itr == patternToAlg.end() || itr->second.convenience_score > convenience_score) {
-                hit_description = itr == patternToAlg.end() ? alg_string : fmt::format("{} -> {}", itr->second.alg, alg_string);
-                patternToAlg[pattern] = {
-                    .alg = alg_string,
-                    .convenience_score = convenience_score
-                };
+            if (itr == patternToAlg.end()) {
+                patternToAlg[pattern] = latest_found_alg = scramble.get().to_string();
                 ++num_hits;
                 last_hit_made = now();
             }
@@ -141,13 +137,14 @@ void doTwoSidedMosaicTest(int argc, char** argv) {
         if (counter % 1'000'000 == 0) {
             std::cout << (patternToAlg.size() == totalPatterns ? "FOUND ALL " : "Found ")
                       << patternToAlg.size() << " of " << totalPatterns
-                      << ", " << scramble.progress() << " | " << num_hits << " hits, last hit: "
+                      << ", " << scramble.progress() << " | " << num_hits << " hits, last "
                       << std::chrono::duration_cast<std::chrono::seconds>(now() - last_hit_made).count()
-                      << "s ago: " << hit_description << std::endl;
+                      << "s ago: " << latest_found_alg << std::endl;
         }
         if (counter % 100'000'000 == 0) {
             std::cout << "Saving progress to " << working_dir << "..." << std::endl;
             save_progress(patternToAlg, scramble, working_dir);
+            save_pace(working_dir, patternToAlg.size());
             std::cout << "Saved, resuming search" << std::endl;
         }
     }
