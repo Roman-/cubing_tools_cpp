@@ -153,4 +153,110 @@ void doTwoSidedMosaicTest(int argc, char** argv) {
     std::cout << "Done";
 }
 
+void doSymmetrySubstitutionThing(int argc, char** argv) {
+    if (argc < 2) {
+        std::cerr << "usage: " << argv[0] << " /path/to/working_dir" << std::endl;
+        exit(-1);
+    }
+    const auto working_dir = argv[1];
+    auto [patternToAlg, _] = load_from_file(working_dir);
+    auto augmented_map = patternToAlg;
+
+    // add in map if it's not there yet
+    const auto check_alg = [&](const std::string& alg) {
+        CubeState<sides333> cube;
+        cube.applyScramble(alg);
+        if (!cube.doFrontAndBackSidesHaveSamePatternWithOppositeColors()) {
+            return;
+        }
+        const auto pattern = cube.frontSideStickers();
+        const auto itr = augmented_map.find(pattern);
+        if (itr == augmented_map.end() || itr->second.size() > alg.size()) {
+            augmented_map.insert({pattern, alg});
+        }
+    };
+
+    const auto explore_alg = [&](const std::string& alg) {
+        check_alg(alg);
+        check_alg(invertScramble(alg));
+
+        check_alg(left2right(alg));
+        check_alg(left2right(invertScramble(alg)));
+
+        check_alg(front2back(alg));
+        check_alg(front2back(invertScramble(alg)));
+
+        check_alg(front2back(left2right(alg)));
+        check_alg(front2back(left2right(invertScramble(alg))));
+
+        check_alg(left2right(front2back(alg)));
+        check_alg(left2right(front2back(invertScramble(alg))));
+    };
+
+    const std::string meme = "R' L U D' F B' R' L";
+    const std::string centers_shift = "R L' F2 B2 R L' U2 D2";
+    // may be used both as prefixes and suffixes, or both
+    static const std::vector<std::string> addon_algs = {
+        "U2 D2", "R2 L2", "F2 B2",
+        "R2 L2 U2 D2", "R2 L2 F2 B2", "U2 D2 F2 B2",
+        "R2 L2 U2 D2 F2 B2",
+
+        centers_shift,
+        front2back(centers_shift),
+        left2right(centers_shift),
+        left2right(front2back(centers_shift)),
+
+        meme,
+        invertScramble(meme),
+        front2back(meme),
+        left2right(meme),
+        left2right(invertScramble(meme)),
+        front2back(invertScramble(meme)),
+
+        // these do not preserve symmetry
+        "R' L F2 B2 R L'",
+        "F B' R' L U D",
+        "R2", "L2", "F2", "B2", "U2", "D2", // single side moves
+        "R' L", "R L'", "F B'", "F' B", "U D'", "U' D",
+
+        // columns - almost full symmetry
+        "F2 B2 R2 F2 B2 R2",
+        "F2 B2 U2 F2 B2 U2",
+        "U2 D2 R2 U2 D2 R2",
+        "U2 D2 F2 U2 D2 F2",
+        "R2 L2 F2 R2 L2 F2",
+        "R2 L2 U2 R2 L2 U2",
+    };
+
+    uint64_t num_algs_checked = 0;
+    for (const auto& [pattern, alg] : patternToAlg) {
+        if (++num_algs_checked % 1000 == 0) {
+            const auto all_algs_found_notice = (augmented_map.size() == 1679616) ? "ALL ALGS FOUND! " : "";
+            std::cout << all_algs_found_notice << "Checked " << num_algs_checked << "/" << patternToAlg.size() << "; new algs added: "
+                      << (augmented_map.size() - patternToAlg.size()) << std::endl;
+        }
+        if (alg.empty()) {
+            continue;
+        }
+
+        for (const auto& addon : addon_algs) {
+            explore_alg(alg);
+            explore_alg(fmt::format("{} {}", alg, addon));
+            explore_alg(fmt::format("{} {}", addon, alg));
+            explore_alg(fmt::format("{} {} {}", addon, alg, addon));
+        }
+    }
+
+    // save
+    const auto path_to_augmented_algs = fmt::format("{}/augmented_algs.txt", working_dir);
+    std::cout << "Done, saving " << augmented_map.size() << " algs to " << path_to_augmented_algs << std::endl;
+    std::ofstream alg_file(path_to_augmented_algs);
+    if (!alg_file.is_open()) {
+        throw std::runtime_error(fmt::format("Failed to open the file {}", path_to_augmented_algs));
+    }
+    for (const auto& [pattern, alg] : augmented_map) {
+        alg_file << pattern << '\t' << alg << '\n';
+    }
+}
+
 }

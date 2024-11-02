@@ -180,7 +180,7 @@ static MirrorMap f2bMap{
 static std::string mirrorMove(const std::string& m, const MirrorMap& map) {
     const auto itr = map.find(m);
     if (itr == map.end()) {
-        throw std::runtime_error(fmt::format("while mirroring alg, got unknown move {}", m));
+        throw std::runtime_error(fmt::format("while mirroring alg, got unknown move <{}>", m));
     }
     return itr == map.end() ? m : itr->second;
 }
@@ -192,7 +192,7 @@ std::string mirrorAlg(const std::string& alg, const MirrorMap& map) {
     for (std::string& m : moves) {
         result.push_back(mirrorMove(m, map));
     }
-    return strutil::join(result, " "); // TODO strutil
+    return strutil::join(result, " ");
 }
 
 std::string left2right(const std::string& alg) {
