@@ -140,3 +140,13 @@ TEST(IterativeScramble, BeenThroughZprime) {
     }
     ASSERT_TRUE(false);
 }
+
+TEST(IterativeScramble, NoParallelMovesDuringIteration) {
+    IterativeScramble<sides333> scramble;
+    while (scramble.size() <= 3) {
+        ++scramble;
+        const std::string alg_str = scramble.get().to_string();
+        ASSERT_FALSE(alg_str.find("L L'") != std::string::npos) << alg_str << scramble.progress();
+//        ASSERT_FALSE(alg_str.find("L' L") != std::string::npos);
+    }
+}

@@ -51,7 +51,7 @@ std::string IterativeScramble<qtmMoveSetSize>::progress() const {
                 + moves_[size - 2] * k1
                 + moves_[size - 3];
     std::string result = std::to_string(size) + " moves, " +
-                         std::to_string(it / maxProgress * 100) + "%";
+                         std::to_string(it / maxProgress * 100.) + "%";
     return result;
 }
 
