@@ -200,7 +200,6 @@ void doSymmetrySubstitutionThing(int argc, char** argv) {
         "U2 D2", "R2 L2", "F2 B2",
         "R2 L2 U2 D2", "R2 L2 F2 B2", "U2 D2 F2 B2",
         "R2 L2 U2 D2 F2 B2",
-
         centers_shift,
         front2back(centers_shift),
         left2right(centers_shift),
@@ -212,6 +211,9 @@ void doSymmetrySubstitutionThing(int argc, char** argv) {
         left2right(meme),
         left2right(invertScramble(meme)),
         front2back(invertScramble(meme)),
+
+        // Rotate the result (F2 B2 are already in the map). Then you may recursively explore the resulting map
+        "F B'", "F' B", "U D'", "U' D",
 
         // these do not preserve symmetry
         "R' L F2 B2 R L'",
@@ -226,6 +228,54 @@ void doSymmetrySubstitutionThing(int argc, char** argv) {
         "U2 D2 F2 U2 D2 F2",
         "R2 L2 F2 R2 L2 F2",
         "R2 L2 U2 R2 L2 U2",
+
+        // crazy patterns that almost preserve symmetry
+        "R L' F' B D U'",
+        invertScramble("R L' F' B D U'"),
+        left2right("R L' F' B D U'"),
+        left2right(invertScramble("R L' F' B D U'")),
+        front2back("R L' F' B D U'"),
+        front2back(invertScramble("R L' F' B D U'")),
+        front2back(left2right("R L' F' B D U'")),
+        front2back(left2right(invertScramble("R L' F' B D U'"))),
+
+        "R2 L2 U2 R2 L2",
+        "R2 L2 D2 R2 L2",
+        "R2 L2 U2 R2 L2 D2",
+        "R2 L2 U2 R2 L2",
+        "R2 L2 D2 R2 L2",
+        "U2 D2 L2 U2 D2 R2",
+        "F2 B2 R2 F2 B2 L2",
+        "L R' U2 D2 L' R U2 D2 R2 L2",
+        "U2 R2 F2 U2 D2 F2 L2 U2",
+        "R2 D2 F2 R2 L2 F2 U2 R2",
+        "R2 D2 R2 U2 R2 F2 U2 D2 F2 U2",
+        "R2 L' D F2 R' D' R' L U' D R D B2 R' U D2",
+        invertScramble("R2 L' D F2 R' D' R' L U' D R D B2 R' U D2"),
+        "R D R F R' F' B D R' U' B' U D2",
+        invertScramble("R D R F R' F' B D R' U' B' U D2"),
+        left2right("R D R F R' F' B D R' U' B' U D2"),
+        front2back("R D R F R' F' B D R' U' B' U D2"),
+
+        // other stuff
+        "F2 B2 R2 L2 U2",
+        "F2 B2 R2 L2 D2",
+
+        "R2 U2 D2 L2",
+        "R2 U2 D2 R2 F2 B2",
+        "R2 F2 B2 R2 U2 D2",
+        "F2 U2 D2 F2 R2 L2",
+
+        "U2 R2 L2 U2",
+        "L2 U2 D2 L2",
+        "F2 U2 D2 F2",
+        "F2 R2 L2 F2",
+
+        // (R2 U2)*3
+        "R2 U2 R2 U2 R2 U2",
+        "L2 U2 L2 U2 L2 U2",
+        "R2 D2 R2 D2 R2 D2",
+        "L2 D2 L2 D2 L2 D2",
     };
 
     uint64_t num_algs_checked = 0;
@@ -241,9 +291,41 @@ void doSymmetrySubstitutionThing(int argc, char** argv) {
 
         for (const auto& addon : addon_algs) {
             explore_alg(alg);
+
             explore_alg(fmt::format("{} {}", alg, addon));
             explore_alg(fmt::format("{} {}", addon, alg));
             explore_alg(fmt::format("{} {} {}", addon, alg, addon));
+
+            // transform the alg independently
+            explore_alg(fmt::format("{} {}", alg, addon));
+            explore_alg(fmt::format("{} {}", invertScramble(alg), addon));
+            explore_alg(fmt::format("{} {}", left2right(alg), addon));
+            explore_alg(fmt::format("{} {}", left2right(invertScramble(alg)), addon));
+
+            explore_alg(fmt::format("{} {}", addon, alg));
+            explore_alg(fmt::format("{} {}", addon, invertScramble(alg)));
+            explore_alg(fmt::format("{} {}", addon, left2right(alg)));
+            explore_alg(fmt::format("{} {}", addon, left2right(invertScramble(alg))));
+
+            explore_alg(fmt::format("{} {} {}", addon, alg, addon));
+            explore_alg(fmt::format("{} {} {}", addon, invertScramble(alg), addon));
+            explore_alg(fmt::format("{} {} {}", addon, left2right(alg), addon));
+            explore_alg(fmt::format("{} {} {}", addon, left2right(invertScramble(alg)), addon));
+
+            // most random stuff
+            explore_alg(fmt::format("{} {}", alg, alg));
+            explore_alg(fmt::format("{} {}", alg, invertScramble(left2right(alg))));
+            explore_alg(fmt::format("{} {}", alg, invertScramble(front2back(alg))));
+
+            // misc
+            explore_alg(fmt::format("{} R2 L2 {}", addon, alg));
+            explore_alg(fmt::format("{} U2 D2 {}", addon, alg));
+            explore_alg(fmt::format("R2 L2 {} {}", addon, alg));
+            explore_alg(fmt::format("U2 D2 {} {}", addon, alg));
+            explore_alg(fmt::format("{} {} R2 L2", addon, alg));
+            explore_alg(fmt::format("{} {} U2 D2", addon, alg));
+            explore_alg(fmt::format("{} R2 L2 {} {}", addon, alg, addon));
+            explore_alg(fmt::format("{} U2 D2 {} {}", addon, alg, addon));
         }
     }
 
