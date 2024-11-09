@@ -11,8 +11,11 @@ target_include_directories(cubing_lib PUBLIC submodules/strutil/include src/)
 
 target_link_libraries(cubing_lib fmt::fmt)
 
-add_executable(cubing_tools ${SOURCES} src/main.cpp)
-target_link_libraries(cubing_tools PRIVATE cubing_lib)
+#add_executable(cubing_tools ${SOURCES} src/main.cpp)
+#target_link_libraries(cubing_tools PRIVATE cubing_lib)
+
+add_executable(merge_maps ${SOURCES} src/merge_maps_main.cpp)
+target_link_libraries(merge_maps PRIVATE cubing_lib)
 
 add_subdirectory(submodules/googletest)
 add_subdirectory(test)
