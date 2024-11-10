@@ -17,5 +17,8 @@ target_link_libraries(cubing_lib fmt::fmt)
 add_executable(merge_maps ${SOURCES} src/merge_maps_main.cpp)
 target_link_libraries(merge_maps PRIVATE cubing_lib)
 
+add_executable(two_sided_mosaic_augmentation ${SOURCES} src/two_sided_mosaic_augmentation.cpp)
+target_link_libraries(two_sided_mosaic_augmentation PRIVATE cubing_lib)
+
 add_subdirectory(submodules/googletest)
 add_subdirectory(test)
