@@ -3,7 +3,7 @@
 std::vector<std::string> getFileContentsAsLines(const std::string& path, bool include_empty_lines) {
     std::ifstream file(path);
     if (!file.is_open()) {
-        throw std::runtime_error(fmt::format("Failed to open the file {}", path));
+        return {};
     }
     std::vector<std::string> result;
     std::string line;
