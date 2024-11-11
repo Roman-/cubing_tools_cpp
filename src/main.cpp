@@ -1,5 +1,4 @@
 #include <iostream>
-#include "cubing/Mosaic.h"
 
 using namespace cubing;
 

@@ -1,5 +1,4 @@
 #include <iostream>
-#include "cubing/Mosaic.h"
 #include "cubing/CubingDefs.h"
 #include "cubing/MosaicDefs.h"
 #include "cubing/Helpers.h"
