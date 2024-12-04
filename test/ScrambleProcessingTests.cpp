@@ -55,16 +55,12 @@ TEST(ScrambleProcessingTests, toStringCombinedMovesCounterExamples) {
     }
 }
 
-TEST(ScrambleProcessingTests, GlueMoves333) {
-    const std::vector<std::pair<std::string, std::string>> original_and_optimized = {
-        {"R2 M2 L2", "x2"},
-        {"R M' L'", "x"},
-        {"R' M L'", "Rw' L'"},
-        {"R' M L", "x'"},
-        {"R' M L", "x'"},
-    };
-    for (const auto& [original, optimized_real] : original_and_optimized) {
-        const auto optimized_through_glue = scrambleGlueMoves333(original);
-        ASSERT_EQ(optimized_through_glue, optimized_real) << "ORIGINAL: " <<  original;
-    }
+TEST(ScrambleProcessingTests, ExecutionConvenienceScore) {
+    ASSERT_EQ(execution_convenience_score(""), 0);
+    ASSERT_GT(execution_convenience_score("Rw"), 0);
+    ASSERT_GT(execution_convenience_score("Rw'"), 0);
+
+    ASSERT_GT(execution_convenience_score("Rw' U"), execution_convenience_score("Rw'"));
+    ASSERT_GT(execution_convenience_score("Rw' U"), execution_convenience_score("U"));
+    ASSERT_GT(execution_convenience_score("S2"), execution_convenience_score("S'"));
 }

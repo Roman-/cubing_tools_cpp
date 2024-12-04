@@ -263,35 +263,38 @@ static std::unordered_map<char, uint32_t> move_scores = {
     {'z', 150},
 };
 
-uint32_t execution_convenience_score(const std::vector<std::string>& moves) {
-    auto single_move_execution_convenience_score = [](const std::string& move) {
-        if (move.empty()) {
-            throw std::runtime_error("execution_convenience_score: empty string");
-        }
-        const auto itr = move_scores.find(move.front());
-        if (itr == move_scores.end()) {
-            throw std::runtime_error("execution_convenience_score: unknown move string <" + move + ">");
-        }
-        uint32_t base_score = itr->second, wide_penalty = 0, double_penalty = 0;
-        if (move.size() > 1 && move[1] == 'w') {
-            wide_penalty = 15 + (base_score - 100) / 2; // R=100 => Rw=115; B=150 => Bw=150+15+25=190
-        }
-        if (move.back() == '2') {
-            double_penalty = 10 + (base_score-100) / 4; // R=100, R2=110; D=120, D2=135; E=150, E2=172
-        }
-        return base_score + wide_penalty + double_penalty;
-    };
-
-    return std::accumulate(moves.begin(), moves.end(), 0, [&](uint32_t sum, const std::string& move) {
-        return sum + single_move_execution_convenience_score(move);
-    });
+uint32_t execution_convenience_score_of_move(std::string_view move) {
+    if (move.empty()) {
+        throw std::runtime_error("execution_convenience_score: empty string");
+    }
+    const auto itr = move_scores.find(move.front());
+    if (itr == move_scores.end()) {
+        throw std::runtime_error(fmt::format("execution_convenience_score: unknown move string <{}>", move));
+    }
+    uint32_t base_score = itr->second, wide_penalty = 0, double_penalty = 0;
+    if (move.size() > 1 && move[1] == 'w') {
+        wide_penalty = 15 + (base_score - 100) / 2; // R=100 => Rw=115; B=150 => Bw=150+15+25=190
+    }
+    if (move.back() == '2') {
+        double_penalty = 10 + (base_score-100) / 4; // R=100, R2=110; D=120, D2=135; E=150, E2=172
+    }
+    return base_score + wide_penalty + double_penalty;
 }
 
 uint32_t execution_convenience_score(const std::string& alg) {
     if (alg.empty()) {
         return 0;
     }
-    return execution_convenience_score(strutil::split(alg, ' '));
+    uint32_t sum = 0;
+    for (size_t index_start = 0; index_start < alg.size(); /* in loop */ ) {
+        auto index_end = alg.find(' ', index_start);
+        if (index_end == std::string::npos) {
+            index_end = alg.size();
+        }
+        sum += execution_convenience_score_of_move(std::string_view{alg.data() + index_start, alg.data() + index_end});
+        index_start = index_end + 1;
+    }
+    return sum;
 }
 
 

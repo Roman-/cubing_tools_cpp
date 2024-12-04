@@ -45,8 +45,6 @@ std::string scrambleTearApart333(const std::string& alg);
 
 
 /// @returns convenience score - lower is better. /// @param moves could include wide moves (Rw, ...) and cube rotations
-uint32_t execution_convenience_score(const std::vector<std::string>& moves);
-
 uint32_t execution_convenience_score(const std::string& alg);
 
 /// \replace moves like 'r' "R M'" etc.
