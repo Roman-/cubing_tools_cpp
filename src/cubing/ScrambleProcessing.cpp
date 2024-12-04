@@ -295,6 +295,7 @@ uint32_t execution_convenience_score(const std::string& alg) {
 }
 
 
+/*
 std::string scrambleGlueMoves333(const std::string& suboptimal_alg) {
     auto alg = suboptimal_alg;
     alg = std::regex_replace(alg, std::regex("R2 M2 L2"), "x2");
@@ -335,6 +336,7 @@ std::string scrambleGlueMoves333(const std::string& suboptimal_alg) {
     alg = std::regex_replace(alg, std::regex("D2 E2"), "Dw2");
     return alg;
 }
+*/
 
 /*
 void scrambleTearApart555(std::string& alg) {

@@ -50,7 +50,7 @@ uint32_t execution_convenience_score(const std::vector<std::string>& moves);
 uint32_t execution_convenience_score(const std::string& alg);
 
 /// \replace moves like 'r' "R M'" etc.
-std::string scrambleGlueMoves333(const std::string& scramble);
+//std::string scrambleGlueMoves333(const std::string& scramble);
 /*
 /// \replace moves like '3Rw' with "Rw M'" etc.
 void scrambleTearApart555(std::string& scramble);

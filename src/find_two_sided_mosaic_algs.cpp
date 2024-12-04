@@ -59,10 +59,11 @@ int main(int argc, char** argv) {
         cube.applyScramble(scramble.get());
         if (cube.doFrontAndBackSidesHaveSamePatternWithOppositeColors()) {
             const auto pattern = cube.frontSideStickers();
-            if (patternToAlgAndConvenience.insert_if_more_convenient(pattern, scramble.get().to_string())) {
+            const auto alg = scramble.get().to_string_combined_moves();
+            if (patternToAlgAndConvenience.insert_if_more_convenient(pattern, alg)) {
                 ++num_hits;
                 last_hit_made = now();
-                latest_found_alg = scramble.get().to_string();
+                latest_found_alg = alg;
             }
         }
 
