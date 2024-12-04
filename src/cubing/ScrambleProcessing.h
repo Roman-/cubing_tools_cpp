@@ -5,7 +5,7 @@
 
 namespace cubing {
 
-// delete double spaces, leave moves only. "R  U' (2f)" -> "R U'"
+// delete double spaces, replace apostrophes. R`  U -> R' U
 std::string normalize(const std::string &source);
 
 /// \returns true if \param m is side-move (R,U,L,D,B,F), R', U', ..., R2, U2, ..., F2.
@@ -48,16 +48,15 @@ std::string scrambleTearApart333(const std::string& alg);
 uint32_t execution_convenience_score(const std::vector<std::string>& moves);
 
 uint32_t execution_convenience_score(const std::string& alg);
+
+/// \replace moves like 'r' "R M'" etc.
+std::string scrambleGlueMoves333(const std::string& scramble);
 /*
 /// \replace moves like '3Rw' with "Rw M'" etc.
 void scrambleTearApart555(std::string& scramble);
 
 /// \replace moves like "R M'" with 'r' etc.
 void scrambleGlueMoves555(std::string& scramble);
-
-
-/// \replace moves like 'r' "R M'" etc.
-void scrambleGlueMoves333(std::string& scramble);
 
 /// replace rotation moves like "x" with R M' L' etc. on 5x5 cube
 void scrambleReplaceRotations555(std::string& scramble);

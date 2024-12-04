@@ -45,6 +45,8 @@ public:
 
     size_t size() const {return _map.size();}
     bool empty() const {return _map.empty();}
+    const auto& get() const {return _map;}
+    bool exists(const std::string& pattern) const {return _map.find(pattern) != _map.end();}
 private:
     std::unordered_map<std::string, AlgAndConvenienceScore> _map;
 };

@@ -249,7 +249,7 @@ static std::unordered_map<char, uint32_t> move_scores = {
     {'L', 110},
     {'D', 120},
     {'B', 150},
-    {'M', 130},
+    {'M', 120},
     {'E', 150},
     {'S', 150},
     {'r', 120},
@@ -258,9 +258,9 @@ static std::unordered_map<char, uint32_t> move_scores = {
     {'l', 130},
     {'d', 140},
     {'b', 170},
-    {'x', 150},
-    {'y', 140},
-    {'z', 140},
+    {'x', 145},
+    {'y', 150},
+    {'z', 150},
 };
 
 uint32_t execution_convenience_score(const std::vector<std::string>& moves) {
@@ -294,27 +294,49 @@ uint32_t execution_convenience_score(const std::string& alg) {
     return execution_convenience_score(strutil::split(alg, ' '));
 }
 
-/*
 
-void scrambleGlueMoves333(std::string &alg) {
-    alg = alg.replace("R2 M2 L2", "x2");
-    alg = alg.replace("R\' M L", "x\'");
-    alg = alg.replace("R M\' L\'", "x");
+std::string scrambleGlueMoves333(const std::string& suboptimal_alg) {
+    auto alg = suboptimal_alg;
+    alg = std::regex_replace(alg, std::regex("R2 M2 L2"), "x2");
+    alg = std::regex_replace(alg, std::regex("R M' L'"), "x");
+    alg = std::regex_replace(alg, std::regex("R' M L(?=\\s|$)"), "x'");
 
-    alg = alg.replace("U2 E2 D2", "y2");
-    alg = alg.replace("U\' E D", "y\'");
-    alg = alg.replace("U E\' D\'", "y");
+    alg = std::regex_replace(alg, std::regex("U2 E2 D2"), "y2");
+    alg = std::regex_replace(alg, std::regex("U E' D'"), "y");
+    alg = std::regex_replace(alg, std::regex("U' E D(?=\\s|$)"), "y'");
 
-    alg = alg.replace("F2 S2 B2", "z2");
-    alg = alg.replace("F\' S\' B", "z\'");
-    alg = alg.replace("F S B\'", "z");
+    alg = std::regex_replace(alg, std::regex("F2 S2 B2"), "z2");
+    alg = std::regex_replace(alg, std::regex("F S B'"), "z");
+    alg = std::regex_replace(alg, std::regex("F' S' B(?=\\s|$)"), "z'");
 
-    alg = alg.replace("R2 M2", "r2").replace("R\' M", "r\'").replace("R M\'", "r");
-    alg = alg.replace("L2 M2", "l2").replace("L\' M\'", "l\'").replace("L M", "l");
-    alg = alg.replace("U2 E2", "u2").replace("U\' E", "u\'").replace("U E\'", "u");
-    alg = alg.replace("F2 S2", "f2").replace("F\' S\'", "f\'").replace("F S", "f");
+    alg = std::regex_replace(alg, std::regex("R2 M2"), "Rw2");
+    alg = std::regex_replace(alg, std::regex("R M'"), "Rw");
+    alg = std::regex_replace(alg, std::regex("R' M(?=\\s|$)"), "Rw'");
+
+    alg = std::regex_replace(alg, std::regex("L2 M2"), "Lw2");
+    alg = std::regex_replace(alg, std::regex("L' M'"), "Lw'");
+    alg = std::regex_replace(alg, std::regex("L M(?=\\s|$)"), "Lw");
+
+    alg = std::regex_replace(alg, std::regex("U2 E2"), "Uw2");
+    alg = std::regex_replace(alg, std::regex("U' E(?=\\s|$)"), "Uw'");
+    alg = std::regex_replace(alg, std::regex("U E'"), "Uw");
+
+    alg = std::regex_replace(alg, std::regex("F2 S2"), "Fw2");
+    alg = std::regex_replace(alg, std::regex("F' S'"), "Fw'");
+    alg = std::regex_replace(alg, std::regex("F S(?=\\s|$)"), "Fw");
+
+    // Replace wide move notations
+    alg = std::regex_replace(alg, std::regex("B' S(?=\\s|$)"), "Bw'");
+    alg = std::regex_replace(alg, std::regex("B S'"), "Bw");
+    alg = std::regex_replace(alg, std::regex("B2 S2"), "Bw2");
+
+    alg = std::regex_replace(alg, std::regex("D E(?=\\s|$)"), "Dw");
+    alg = std::regex_replace(alg, std::regex("D' E'"), "Dw'");
+    alg = std::regex_replace(alg, std::regex("D2 E2"), "Dw2");
+    return alg;
 }
 
+/*
 void scrambleTearApart555(std::string& alg) {
     alg = alg.replace("2\'", "2").replace("\'2", "2");
     alg = alg.replace("4Uw2", "3Uw2 d2").replace("4Uw\'", "3Uw\' l").replace("4Uw", "3Uw l\'");

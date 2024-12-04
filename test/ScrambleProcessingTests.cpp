@@ -54,3 +54,17 @@ TEST(ScrambleProcessingTests, toStringCombinedMovesCounterExamples) {
         ASSERT_EQ(cube1.toString(), cube2.toString());
     }
 }
+
+TEST(ScrambleProcessingTests, GlueMoves333) {
+    const std::vector<std::pair<std::string, std::string>> original_and_optimized = {
+        {"R2 M2 L2", "x2"},
+        {"R M' L'", "x"},
+        {"R' M L'", "Rw' L'"},
+        {"R' M L", "x'"},
+        {"R' M L", "x'"},
+    };
+    for (const auto& [original, optimized_real] : original_and_optimized) {
+        const auto optimized_through_glue = scrambleGlueMoves333(original);
+        ASSERT_EQ(optimized_through_glue, optimized_real) << "ORIGINAL: " <<  original;
+    }
+}

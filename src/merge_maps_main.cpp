@@ -2,15 +2,16 @@
 #include "cubing/CubingDefs.h"
 #include "cubing/MosaicDefs.h"
 #include "cubing/Helpers.h"
+#include "cubing/ScrambleProcessing.h"
 #include <fmt/format.h>
 #include <filesystem>
 
 using namespace cubing;
 
 /// if not found, returns empty map
-static PatternToAlgMap maybe_load_algs_map_from_file(const std::string& file_path) {
+static PatternToAlgAndConvenienceMap maybe_load_algs_map_from_file(const std::string& file_path) {
     try {
-        return PatternToAlgMap::load_from_file(file_path, false);
+        return PatternToAlgAndConvenienceMap::load_from_file(file_path, false);
     } catch (const std::runtime_error& e) {
         return {}; // ignore errors
     }
@@ -29,7 +30,7 @@ int main(int argc, char** argv) {
     }
 
     // for each dir in root_dir, load algs from algs.txt and merge them
-    PatternToAlgMap merged;
+    PatternToAlgAndConvenienceMap merged;
     for (const auto& dir : std::filesystem::directory_iterator(root_dir)) {
         if (!std::filesystem::is_directory(dir)) {
             continue;
@@ -42,14 +43,12 @@ int main(int argc, char** argv) {
             continue;
         }
         std::cout << "Loaded " << partial_map.size() << " algs, merging..." << std::endl;
-        size_t new_algs = 0, shorter_algs = 0;
-        for (const auto& [pattern, alg] : partial_map.get()) {
-            const bool exists = merged.exists(pattern);
-            const bool inserted = merged.insert_if_shorter(pattern, alg);
-            new_algs += !exists;
-            shorter_algs += exists && inserted;
+        size_t hits = 0;
+        for (const auto& [pattern, suboptimal_alg_and_score] : partial_map.get()) {
+            auto optimized_alg = scrambleGlueMoves333(suboptimal_alg_and_score.alg);
+            hits += merged.insert_if_more_convenient(pattern, optimized_alg);
         }
-        std::cout << "Inserted " << new_algs << " new algs and updated " << shorter_algs << " algs\n";
+        std::cout << hits << " hits\n";
     }
 
     if (!merged.save_to_file(path_to_merged_algs)) {
